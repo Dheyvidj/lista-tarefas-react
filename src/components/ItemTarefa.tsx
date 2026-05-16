@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Tarefa } from '../types';
+import { Button } from 'react-bootstrap';
 
 interface ItemTarefaProps {
   tarefa: Tarefa;
@@ -44,8 +45,8 @@ function ItemTarefa({tarefa, aoToggle, aoRemover, aoEditar }: ItemTarefaProps) {
           value={textoEditado}
           onChange={(e) => setTextoEditado(e.target.value)}
         />
-        <button type='submit'>Salvar</button>
-        <button type='button' onClick={cancelarEdicao}>Cancelar</button>
+        <Button type='submit'>Salvar</Button>
+        <Button type='button' onClick={cancelarEdicao}>Cancelar</Button>
       </form>
     );
   }
@@ -67,11 +68,11 @@ function ItemTarefa({tarefa, aoToggle, aoRemover, aoEditar }: ItemTarefaProps) {
         {tarefa.titulo}
       </span>
       
-      <button onClick={() => setEditando(true)}>Editar</button>
+      <Button variant='info' onClick={() => setEditando(true)}>Editar</Button>
       
-      <button onClick={() => aoRemover(tarefa.id)}>
+      <Button variant='danger' onClick={() => aoRemover(tarefa.id)}>
         Remover
-      </button>
+      </Button>
 
     </div>
   );

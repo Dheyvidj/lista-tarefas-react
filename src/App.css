@@ -17,7 +17,7 @@ input[type="text"] {
   border-radius: 6px;
   font-size: 15px;
 }
- 
+/*  
 button {
   padding: 10px 16px;
   background: #2563eb;
@@ -26,7 +26,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-}
+} */
  
 button:hover {
   background: #1d4ed8;
@@ -46,21 +46,21 @@ button:hover {
   flex: 1;
 }
  
-.item-tarefa button {
+/* .item-tarefa button {
   background: #ef4444;
   padding: 6px 12px;
   font-size: 13px;
-}
+} */
 
-.item-tarefa .botaoEditar {
+/* .item-tarefa .botaoEditar {
   background: #52ef44;
   padding: 6px 12px;
   font-size: 13px;
-}
+} */
  
-.item-tarefa button:hover {
+/* .item-tarefa button:hover {
   background: #dc2626;
-}
+} */
 
 .item-tarefa .botaoEditar:hover {
   background: #3fc934;

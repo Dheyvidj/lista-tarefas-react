@@ -1,29 +1,27 @@
-import { useEffect, useState } from "react";
-import ItemTarefa from "./components/ItemTarefa";
-import FormularioTarefa from "./components/FormularioTarefa";
-import type { Tarefa, TarefaApi } from "./types";
-import "./App.css"
+import { useState, useEffect } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
-
+import { Container, Nav, Navbar } from "react-bootstrap";
+import { type Tarefa, type TarefaApi } from "./types";
+import Inicio from "./pages/Inicio";
+import Sobre from "./pages/Sobre";
+import "./App.css";
+ 
 function App() {
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
-  const pendentes = tarefas.filter(t=> !t.concluida).length;
-  const conluidas = tarefas.filter(t => t.concluida ).length;
-  const [carregando, setCarregando] = useState(true)
-
+  const [carregando, setCarregando] = useState(true);
+ 
   useEffect(() => {
     async function carregarTarefas() {
       try {
         const resposta = await axios.get(
           "https://jsonplaceholder.typicode.com/todos?_limit=5"
         );
-  
         const tarefasMapeadas: Tarefa[] = resposta.data.map((t: TarefaApi) => ({
           id: t.id,
           titulo: t.title,
           concluida: t.completed,
         }));
-  
         setTarefas(tarefasMapeadas);
       } catch (erro) {
         console.error("Erro ao carregar tarefas:", erro);
@@ -31,107 +29,85 @@ function App() {
         setCarregando(false);
       }
     }
-  
     carregarTarefas();
   }, []);
-
-
+ 
   async function adicionarTarefa(titulo: string) {
-    try { 
-
-      setCarregando(true);
-
-      if(tarefas.find(t => t.titulo === titulo)){
-        alert("Já existe uma tarefa com esse título")
-        return;
-      }
-
-
-      const resposta = await axios.post("https://jsonplaceholder.typicode.com/todos", 
-        {
-          title: titulo,
-          completed: false,
-          userId: 1
-        } 
-      )
-
-
-      const nova:Tarefa = {
+    try {
+      const resposta = await axios.post(
+        "https://jsonplaceholder.typicode.com/todos",
+        { title: titulo, completed: false, userId: 1 }
+      );
+      const nova: Tarefa = {
         id: resposta.data.id,
         titulo: resposta.data.title,
-        concluida: resposta.data.completed
+        concluida: resposta.data.completed,
       };
-
       setTarefas([...tarefas, nova]);
-
-      setCarregando(false)
-
-    } catch(erro){
-        console.log("Erro ao adicionar tarefa:" +  erro);
+    } catch (erro) {
+      console.error("Erro ao adicionar tarefa:", erro);
     }
   }
-
+ 
   function toggleTarefa(id: number) {
-
-    setTarefas(tarefas.map(t => 
-      t.id == id ? {...t, concluida: !t.concluida} : t
-    ))
+    setTarefas(
+      tarefas.map((t) =>
+        t.id === id ? { ...t, concluida: !t.concluida } : t
+      )
+    );
   }
-
+ 
   async function removerTarefa(id: number) {
-    try{ 
-      setCarregando(true)
-
-      await axios.delete("https://jsonplaceholder.typicode.com/todos/" + id)
-
-       setTarefas(tarefas.filter(t => t.id != id))
-
-       setCarregando(false)
-    }catch(erro){
+    try {
+      await axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`);
+      setTarefas(tarefas.filter((t) => t.id !== id));
+    } catch (erro) {
       console.error("Erro ao remover tarefa:", erro);
     }
-   
   }
-
-  function limparTarefasConcluidas() {
-    setTarefas(tarefas.filter(t => !t.concluida))
+ 
+  function editarTarefa(id: number, novoTitulo: string) {
+    setTarefas(
+      tarefas.map((t) => (t.id === id ? { ...t, titulo: novoTitulo } : t))
+    );
   }
-
-  function aoEditar(id: number, novoTitulo: string){
-    setTarefas(tarefas.map(t => 
-      t.id === id ? {...t, titulo: novoTitulo } : t
-    ))
-  }
-
+ 
   return (
     <>
-     <h1>Lista de Tarefas</h1>
-
-    <p>Você tem {pendentes} pendentes</p>
-    <FormularioTarefa aoAdicionar={adicionarTarefa} />
-
-    {carregando ? <p>Carregando tarefas...</p> : tarefas.length === 0 ? (
-      <p>Nenhuma tarefa ainda. Adicione a primeira!</p>
-    ) : 
-    (
-      tarefas.map((tarefa) => (
-        <ItemTarefa 
-          key={tarefa.id}
-          aoRemover={removerTarefa}
-          aoToggle={toggleTarefa}
-          tarefa={tarefa}
-          aoEditar={aoEditar}/>
-      ))
-    ) }
-    
-
-    { conluidas > 0  && 
-       <button
-          type="button"
-          onClick={limparTarefasConcluidas}
-        >Limpar tarefas concluídas</button>
-    }
+      <Navbar bg="primary" variant="dark" expand="lg">
+        <Container>
+          <Navbar.Brand as={Link} to="/">
+            Tarefas
+          </Navbar.Brand>
+          <Nav>
+            <Nav.Link as={Link} to="/">
+              Início
+            </Nav.Link>
+            <Nav.Link as={Link} to="/sobre">
+              Sobre
+            </Nav.Link>
+          </Nav>
+        </Container>
+      </Navbar>
  
+      <Container className="mt-4">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Inicio
+                tarefas={tarefas}
+                carregando={carregando}
+                aoAdicionar={adicionarTarefa}
+                aoToggle={toggleTarefa}
+                aoRemover={removerTarefa}
+                aoEditar={editarTarefa}
+              />
+            }
+          />
+          <Route path="/sobre" element={<Sobre />} />
+        </Routes>
+      </Container>
     </>
   );
 }

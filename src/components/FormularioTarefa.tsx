@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 interface FormularioTarefaProps {
   aoAdicionar: (titulo: string) => void;
+  isLoading: boolean;
 }
 
 
-function FormularioTarefa({ aoAdicionar } : FormularioTarefaProps) {
+function FormularioTarefa({ aoAdicionar, isLoading } : FormularioTarefaProps) {
     
     const [texto, setTexto] = useState<string>("");
-
+    const navigate = useNavigate();
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         
@@ -19,6 +22,7 @@ function FormularioTarefa({ aoAdicionar } : FormularioTarefaProps) {
     
         aoAdicionar(texto);
         setTexto("");
+
     }
 
     return (
@@ -29,7 +33,10 @@ function FormularioTarefa({ aoAdicionar } : FormularioTarefaProps) {
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Nova tarefa..."
       />
-      <button type="submit">Adicionar</button>
+      <Button variant="dark" type="submit" disabled={isLoading}>
+        {isLoading && <Spinner animation="border" variant="light"  />}
+        Adicionar
+        </Button>
     </form>
   );
 }

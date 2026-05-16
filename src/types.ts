@@ -3,3 +3,9 @@ export interface Tarefa {
   titulo: string;
   concluida: boolean;
 }
+
+export interface TarefaApi {
+  id: number;
+  title: string;
+  completed: boolean;
+}
